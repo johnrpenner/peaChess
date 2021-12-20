@@ -1,0 +1,1284 @@
+peaChess 3.4 by John Roland Penner
+
+--| HISTORY peaBrain 1-5 |----- 
+
+> Development Timeline: 
+	| 2009 - pChess 1.0
+	| 2010 - pChess 2.0; dropFour
+	| 2011 - pChess UCI; port to C++
+	| 2012 - pea3 C++ commandline; [freeSpace]
+	| 2013 - peaBrain 4.3 C++ engine
+	| 2014 - Chess Meister 1.0
+	| 2015 - NEX4 1.0; [OMM elisa clone]
+	| 2016 - Music Invaders 1.0
+	| 2016 - peaBrain5 Swift Chess Engine
+	| 2017 - Chess Meister II for iPhone
+	| 2018 - Hnefatafl 0.9.0
+	| 2021 - pea3 C++ commandline > GitHub
+
+
+--| THANKS |----------------------------------------------
+
+- Papa Penner Sr. for Games of Real Chess. 
+- Robert Purves for Mentoring and Recursion. 
+- Gregory Steiner and Brendan Ferguson for help with Code. 
+
+
+--| Chess Meister version 1.0.0 |--------------------------- 
+
+december 10, 2011
+	> JRP: wrote first C++ code: 001-helloWorld.c
+	> JRP: wrote 002-array.c (powers of two)
+
+december 20, 2011
+	> JRP: wrote 003-functions.c > call a function, pass a value. 
+	
+december 24, 2011
+	> JRP: wrote: 004-argsin.c > pass arguments from commandline. 
+
+december 25, 2011
+	> JRP: wrote: 005-pointer.c > passing pointers between functions.
+
+december 29, 2011
+	> JRP: wrote: 006-sendrcv.c > pass an array pointer between functions. 
+	
+december 30, 2011
+	> JRP: wrote: pea.007.c > sender and reciever functions passing structs. 
+
+january 6, 2012
+	> JRP: wrote: pea.008.c > new functions: initBoard() and dispBoard(). 
+	
+january 7, 2012
+	> JRP: wrote: pea.009.c > generateRawMoves(); pieceTree(); dispMoves(). 
+
+january 8, 2012
+	> JRP: wrote: pea.010.c > command to move a piece on the board in main(). 
+
+january 9, 2012
+	> JRP: wrote: pea.011.c > move a piece; display list of moves. 
+	
+april 18, 2012
+	>> ENGINE <<
+	> peaBrain.cpp -- the engine needs to be created. picking up our lessons. 
+	the last was: pea.011.cpp, which displayed a board, and showed white pawn
+	moves. the project was moved by gregory steiner, who upped the C++ ante, 
+	and now we have to port our own code to C++ and start writing the new
+	engine. this has yielded a C++ project with the following files: 
+	
+	> pea.012.cpp :: initBoard(); initMasks(); main();
+	> headers.cpp :: constants; global structs; global declarations; prototypes
+	> tools.cpp   :: convert2XYandPrint(); moveTool();
+	> display.cpp :: displayBoard(); displayMoves();
+	% g++ pea.012.cpp -o pea
+	% ./pea
+
+april 22, 2012
+	> JRP: study temple at gregory steiner's. 
+	+ moves.cpp > added function knightMoves();
+
+april 24, 2012 (pea.012)
+	> JRP: after days of wrangling over the vector masks for bishopMoves()
+	with no joy.. the mask bounds were returning wrong results. turns out,
+	that we were missing commas ( , ) at the end of each line in the 
+	gBoardMask[] declaration. once we had that, everything just worked. :) 
+	- special mention to gregory steiner, who tracked this bug ahead of me. 
+	- moves.cpp > added function bishopMoves();
+
+april 26, 2012 (pea.014)
+	> JRP: moves.cpp
+	+ added function rookMoves()
+
+april 27, 2012 (pea.015)  // happy 70th birthday papa!!
+	> JRP: moves.cpp
+	+ added function kingMoves();
+	+ added function queenMoves();
+	+ added 'new' command to main loop. 
+	+ new source file: search.cpp
+	+ added function sq2X(); sq2Y();
+	+ added function makeMove().. not yet functioning..!?!? :-p
+
+may 11, 2012 (pea.015)
+	> JRP: pea.015.cpp; search.cpp; declares.cpp; tools.cpp
+	+ couldnt figure out why passing &boardRecord wasnt working..
+	  gregory pointed out (sic) that we need to: #include "search.cpp" duh! 
+	  three days just to figure that out.. makeMove() works fine now. :-p 
+
+may 14, 2012 (pea.016)
+	> JRP: eval.cpp; added FN: 
+	int staticEval( boardRecord &theBoard );
+	- currently, it only considers the following features: 
+	i) material (weighted); ii) mobility; and iii) pawn tropism. 
+
+	> JRP: search.cpp; added FN: 
+	bool isAttacked( int querySquare, boardRecord &theBoard );
+
+	> JRP: pea.016.cpp; added new peaCmd: eval
+	eval returns a static evaluation of the board. 
+
+	> JRP: tools.cpp; added new peaCmd: 
+	!e4 - returns TRUE if enemy pieces attack square e4. 
+	still returning buggy results in testing though.. :-p
+
+may 15, 2012 (pea.017)
+	> JRP: display.cpp; added board.who2move to all board displays
+	> JRP: isAttacked() is now returning correct results. it seems 
+	that i had initialized numMoves to zero, but forgot to reset it 
+	within the loop when calling the inidivdual pieceMoves. fixed! 
+
+	> JRP: search.cpp; added new FN: 
+	bool isSideToMoveInCheck( boardRecord &theBoard );
+	it took four hours to find that my FOR loop had: myKingSq>64,
+	and this caused it to never detect the king; <64 fixes it.. doh!!
+	we actually fixed this bug on the ferry boat on the 8:45 belt line. :-}
+	- also updated the eval display to display 'CHECK!'. 
+	
+	> JRP: search.cpp; added new FN: 
+	bool isLegalPosition( boardRecord &theBoard );
+	
+may 16, 2012 (pea.018)
+	> JRP: wenjaloot! thank you lord for this day. 
+	help me to programme well, that i may write most excellent code. amen. 
+
+	> JRP: added new FN: 
+	int generateLegalMoves( boardRecord &board, moveRecord moves[] )
+	this compiled on the first try.. prayer worked. ;-> onwards to nega!!
+	
+	> JRP: pea.018.cpp: added new FN: 
+	bool computerMove( boardRecord &theBoard, bool useBookOpenings ); 
+	- added new peaCmd: 'move', which calls computerMove();
+
+	> JRP: display.cpp: added new FN: 
+	void displayOverlay( boardRecord &theBoard, moveRecord theMoves[], 
+	int numMoves ); which displays an overlay of moves supplied to it. 
+	using ASCII escape codes for cursor control and terminal text colour. 
+	
+	> JRP: search.cpp: added new FN: 
+	moveRecord computerSearch( boardRecord &theBoard, int depth );
+	which is the last function we need before NEGASEARCH!!! 
+	getting so close, i can taste it... @:->
+	
+	> JRP: search.cpp: added new FN: 
+	int negaSearch( boardRecord &board, int alphaScore, int betaScore, 
+		int depth, int ply);
+	NEGASEARCH!!! :-D first recursion, may 16, 20:12 in the evening. 
+	wahoooooo!! :->>
+	
+may 17, 2012
+	> JRP: keep getting segmentation faults after 3-4 working recursions..
+	wtf!??
+	spent the whole day trying to track the bug.. finally narrowed it down to
+	the way that queen moves are generated in pieceTree(). it doesnt start the
+	movesIndex at an offset when calling +=rookMoves().. and this causes an 
+	index out of bounds.. grr.. it seems we have to cast the pointer to (void*)
+	when passing an offset index of an array of structs... @:-\ 
+	still looking for the correct syntax to make that happen, 
+	but after five hours, the problem is now understood. 
+
+may 18, 2012
+	> JRP: eval.cpp; added knightTropismScore. 
+	> JRP: search.cpp; added FN perft(); added a 'perft' cmd to tools.cpp. 
+	- move generator is yielding segmentation fault during perft().. aargh. :-p
+
+may 19, 2012 (pea.018)
+	> JRP: moves.cpp; enough time futzing with fancy-pants pointer techniques. 
+	we need a move generator, so we can write an interface to our objective-C 
+	classes to get things movin around on the pad.. the queen doesnt need to be 
+	fancy-schmancy compound generated.. waste some extra lines of code.. 
+	and be done with it. instead of compound bishop-rook, it is now a dedicated
+	function for queenMoves(), and gQueenVect[8]; gQueenMask[8]. :-p
+	pea3 will now play a complete game to checkmate. woohoo!! :-} 
+
+may 21, 2012 (peaChess)
+	> JRP: peaChess.xcodeproj > chessViewController.m
+	after getting the pieces to initialize to the right place, now i'm trying
+	to do something simple, like reset the pieces after i've moved them. 
+	added a button to the xib, wired it up to an -(IBAction)resetBoard; 
+	and added a method to handle the button: 
+	
+	-(IBAction)resetBoard { 
+    [boardModel clear];
+   	[boardModel reset];
+	[boardView render:boardModel];
+	}
+	
+	you'd think this would work. but what actually happens, is that another
+	instance of the pieces overlays the existing pieces, and now we have 
+	simply added to the number of objects, instead of resetting them.. 
+	diving into the boardModel code.. and it is hard to disentangle new
+	objective syntax. oh, objectiveC.. how i loathe thee.. you make 
+	difficult things easy, and easy things hard.. :-< 
+
+may 22, 2012 (pea.018)
+	> GREE: moves.cpp > pieceMoves(): fixed a bug with the compound move 
+	generation for the queen. it simply required a: numMoves += pieceMoves;
+	between bishopMoves() and rookMoves() to update the index to moves[] before
+	diving into the next function call. duh! well meestir steiner has just 
+	proved himself a clever C++ programmer. :-) 
+
+	> GREE: depreciation notice: the above fix allows us to remove the crufty 
+	queenMoves() code (written on may 19) in order to reinstate the more 
+	elegant purves solution used in the futureBasic version of pChess. :-} 
+	
+	> JRP: gree's code is solid, and warranted; it has been tested, 
+	and merged into the baseline. well done master gregory, you have been 
+	the most excellent assistant in crackin this bug. :-D 
+
+	> JRP: eval.cpp > staticEval. in code review, discovered a late night coding 
+	blunder.. :-p i had computed the tropism scores within the loop.. bad no no. 
+	they are now allowed to accumulate within the loop, and then summed up 
+	properly at the end of the process.. no more crazy high eval scores 
+	(which were	artificially inflated for both black and for white - so it 
+	still ran through the nega.. but still.. :-p ). 
+
+	> JRP: the C++ engine is now alive..!! it runs and hums.. 
+	plays to checkMate. time to bump the version from 3.0.018 to 3.1.019. 
+	now we need to make it fully functional: full eval, castling, enpassant,
+	quiesence search, itterative search, fischer support, SAN string 
+	interpretation, FEN support, PGN support, and not least -- learning 
+	how to write the class interfaces for objective-C. :-p 
+
+may 23, 2012 (pea 3.019)
+	> JRP: moves.cpp > kingMoves(): adding king castling, white king, king side. 
+	this is on the train to kitchener with greg steiner to see JR. 
+
+may 24, 2012 (pea 3.019)
+	> JRP: kingMoves didnt generate the castling move from yesterday. the code 
+	was fine. the bug was that board.wCastleKside == instead of = true in 
+	initBoard().. wtf!? 
+
+	> JRP: search.cpp > makeMove(): added a test to expire castling when 
+	a king or a rook is moved. [on the bus with gree from kitchener > union]
+
+	> JRP: search.cpp > makeMove(): added pawn to queen promotion. 
+	> JRP: search.cpp > makeMove(): added white castling support. 
+	> JRP: search.cpp > makeMove(): added black castling support. 
+	> JRP: moves.cpp > wKingMoves(): added castling, white king, queen side. 
+	> JRP: moves.cpp > bKingMoves(): added castling, black king, king side. 
+	> JRP: moves.cpp > bKingMoves(): added castling, black king, queen side. 
+	- still need to add castling feature to evaluation. 
+
+may 25, 2012
+	> JRP: display.cpp > displayBoard(); displayOverlay()
+	added ASCII codes to display black squares as blue and white squares as white. 
+
+	> JRP: moves.cpp > wKingMoves(); bKingMoves
+	castling moves no longer generated when we are in check. 
+	
+	> JRP: display.cpp: made who2move reflect the current player colour. 
+	
+	> JRP: pea.019.cpp; tools.cpp: moved the cmd parsing into tools.cpp, 
+	and renamed moveTool() to parseMove(). 
+	
+	> JRP: display.cpp > displayMoves(); displaySqMoves(): 
+	removed redundant display code from functions: 
+
+	> JRP: search.cpp > added new FN: sortMoves() which sorts by the 
+	insertion method. it is originally written by robert purves for me 
+	in futureBasic; this is a port. it speeds up negaSearch 
+	almost 10x (!!!) -- being the single biggest improvement
+	in search speed that we could implement. :-} 
+	
+	> JRP: sortMoves() required adding .capturedPiece member to struct
+	moveRecord, and going through the whole move generator, and adding
+	.capturedPiece members for all capture moves in all pieceTypes. :-p 
+	
+	> JRP: moves.cpp > wPawnMoves(); bPawnMoves()
+	the if(gMaskBoards..) didnt include {} brackets, and i think this
+	is why the perft FN was crashing with a segment fault. 
+	
+	> JRP: display.cpp > displayBoard(); displayOverlay(): if the boolean
+	constant UTF8 is true, then UTF8 chess characters will be used to 
+	display the board. wheee! :-D  unfortunately, these look horrible
+	when at small point sizes, and especially when not anti-aliased. :-p
+
+	> JRP: search.cpp > makeMove(): added white enpassant move. 
+	> JRP: search.cpp > makeMove(): added black enpassant move. 
+	> JRP: moves.cpp > wPawnMoves(): added .enPassant field to moveRecord
+	> JRP: moves.cpp > bPawnMoves(): added .enPassant field to moveRecord
+
+	> JRP: moves.cpp > wPawnMoves(); bPawnMoves: both these functions
+	didnt take into account things figured out in the original. rewrote
+	gregory's pawn abomination according to the original peaBrain model. 
+	still having some segmentation faults (bugs!!) with enPassant moves. :-p
+	
+may 26, 2012
+	> JRP: search.cpp > computerSearch(): didnt return .capturedPiece
+	in the moveRecord, and i think this was causing some segFaults during
+	sortMoves(). :-\  at least it doesnt crash during enPassant any more. :)
+
+	> JRP: added gMovesMade reporting in computerSearch(). 	
+
+	> JRP: tools.cpp > parseMove(); computerMove(): added depth command. 
+	
+may 28, 2012
+	> JRP: pea.019.cpp: started new function: 
+	void fromFEN( boardRecord &theBoard, string fen );
+	not even half written yet.. but its a start.. :-p
+	
+	> JRP: peaBrain 3.019 — the spanky new baby engine we're writing 
+	for the iPad Chess Meister — played its first human opponent tonight! 
+	a milestone. :-) 
+	
+may 29, 2012
+	> JRP: sent RP a copy of pea3.019 with two questions: 
+	i) is it braindead to pass with & instead of *pointers?
+	ii) objectiveC class interfaces for C++ --> best practice? 
+
+	> JRP: search.cpp > isAttacked(): optimization, adding a return 
+	immediately after it finds it (isAttacked).. instead of looping 
+	through all the remaining cases anyway.. what a waste. this speeds
+	things up considerably, and makes depth=4 quite a bit more responsive. :)
+	
+	> GREE: search.cpp > perft(): fixed the perft() function. 
+	it didnt cutoff, now it tests the depth, and returns the numNodes 
+	at a depth==1. 
+
+june 7, 2012
+
+	| Subject: Robert Purves has passed
+	| Date: June 3, 2012 13:05:43 EDT
+	| 
+	| Dear FBers, Regrettably I have sad news for the FutureBasic community. 
+	| One of our greatest, Robert Purves, is now gone. 
+	| 
+	| On Jun 2, 2012, at 10:57 PM, Ian Purves wrote:
+	| > Sorry to say Robert died yesterday morning, I was with him at the end,
+	| > he died peacefully in my arms in his living room… we are holding a 
+	| > service for him in dunedin [New Zealand] on wednesday at 2.30
+	| > Ian Purves
+
+	the grandfather of pChess -- a mentor and a friend has died. :-( 
+
+	robert helped me understand recursion, and he helped debug 
+	the negaSearch() recursive function at the heart of pChess! 
+	he provided hash tables, and bitBlitzing bitboards his spandrel 
+	chess engine played fast and solid — like the futureBasic 
+	to which he gave so much of his time. 
+	
+	how tirelessly he gave of his experience and insight to tricky 
+	coding problems. he gave us a fast modern compiler. he fixed 
+	obscure bugs with a depth of knowledge, and provided elegant 
+	succinct answers to long thorny problems — 	may you rest in peace 
+	good robert!! as you wend your way back to the spheres of 
+	the moon and the sun, to shine your light — 
+	as you did in your life — upon everyone. 
+
+	thanx you robert purves, 
+	for all that you gave. 
+	rip
+
+
+june 8, 2012
+	> JRP: declares.cpp: major headache of a bug setting bool in a struct. 
+	- changed the all the const types from long to int. 
+	- after hours of wrangling my head, i have found a bug; but can anyone
+		tell me why the output of the following code: 
+
+		cout << theBoard.square[63] << endl;
+		theBoard.wCastleQside = false;
+		cout << theBoard.square[63] << endl; 
+
+	yields: -4 the first time, and -65284 the second time..!?!?!
+
+	setting one variable should not affect a separate variable in a struct. 
+	but i'm figuring its because of how the bool bits get packed in a byte,
+	and somehow, changing the bool BIT is changing bits in a preceding BYTE, 
+	and causing the bit change to translate into a byte change in the adjoining
+	field -- thus, it is brain dead stupid, but im changing all the BOOL in 
+	the boardRecord to INT.. wasting bits.. aargh. 
+	but at least the @#$ dont crash!! :-p
+
+	> JRP testing.. wCastleKingSide is not generated. :-(
+	confirmed: castling rights problbems; one castle rook out. 
+	> JRP: added gVerbose option; shows all board parameters; 
+	wCastleKside == -4..!?!?! wtf!?!? 
+
+	> JRP: both of these were fixed with the boardRecord{..square[64]..}
+	fix on june 11!! board squares were overwriting the BOOL values! :-p
+
+june 11, 2012
+	> JRP: declares.cpp: finally tracked the bug that's been dogging us
+	all week -- so simple, but like finding a needle in a digital haystack. :-p
+	what it was is that in the declaration of the boardRecord struct, we had
+	used int square[63] -- thinking, we only used squares 0..63, but we need
+	to declare n+1 values (i.e. int square[64];), and this is why changes 
+	in the castling BOOLs were screwing around with square[63] of the 
+	boardRecord.. one letter fixes the move generator, and now 
+	we have passed PERFT 6 (119060324) - woohoo! :-D 
+
+	> JRP: added to pea.020.cpp: 
+	#include <stdio.h>	//  printf() et al
+	#include <stdlib.h>	//  abs()
+	this adds compatibility with compiling under gcc in ubuntu (gree!!)
+
+june 12, 2012
+	> JRP: updated the perft command so you can supply a DEPTH. 
+	currently, this also changes the gDepth global.. :-p 
+
+	> JRP: also, updated the 'eval' command to displayBoard(). 
+
+june 13, 2012
+	> JRP: pea.020.cpp > computerMove(), i was using gBoard instead
+	of theBoard in: isSideToMoveInCheck(theBoard) -- and this caused
+	a segmentation fault when theBoard and gBoard differed significantly. 
+	thanks to the listening ear of the gree meister -- fixed. :D 
+
+june 25, 2012
+	> JRP: search.cpp: added FN quiescenceSearch(). it does not currently work, 
+	as we have not yet written the attackMove generators, nor the function 
+	that generates only captureMoves. once we've got those, it should sufficiently 
+	extend the search to take care of any 'hanging captures' not normally caught 
+	at a given level of search (no more screwball sacrifices!). :-) 
+
+july 4, 2012
+	> JRP: created new file: attacks.cpp. this is basically a clone of moves.cpp, 
+	except that when we're done with it, we will have stripped out all the moves
+	which are not attacks.. this will speed legal move generation, and also 
+	enable us to write the generateCaptureMoves() function -- necessary in 
+	order for quiesenceSearch() to work. so far, i've only rewritten three of 
+	the member functions: wPawnAttacks(); bPawnAttacks(); and bishopAttacks(). 
+
+july 18, 2012
+	> JRP: in pea.021.cpp added FN getWords() that returns an array of strings: 
+	int getWords( string myStr, string* myWords ). since the index in a declaration
+	normally refers to the character within a string (e.g. myStr[n] ), it requires 
+	a tricky method of initialization: string* myStrings = new string[sizeofarray];
+
+	| // DEFINE AN ARRAY OF STRINGS
+	| string* myStrings; 
+	| myStrings = new string[sizeofarray]; 
+	| 
+	| int returnStrings(string* strArray, int sizeofarray) {
+	| 	int i;
+	| 	for (i = 0; i < sizeofarray; i++) {
+	| 		strArray[i] = "string";
+	| 		}
+	| 	return 0; 
+	| }
+
+july 21, 2012 (Long Lake w Gary)
+	> JRP: finished writing the attack generators: knightAttacks(); 
+	rookAttacks(); queenAttacks(); wKingAttacks(); and bKingAttacks(). 
+
+	> JRP: in search.cpp, updated the function: isAttacked() to use the 
+	new attack generators. 
+
+	> JRP: added all the attack generators into declares.cpp, and got rid of 
+	some inconsistencies between moves.cpp and the declarations in the .h file. 
+	got rid of pieceColour paramater on wKingMoves() and bKingMoves(); and 
+	updated calls to these as well. :-^
+
+	> JRP: added a 'verbose' command to the parser in tools.cpp. 
+	it enables display of: who2move; castlingFlags; and enPassantSq. 
+	this was already in display.cpp as a constant, so all it took was 
+	basically just setting/unsetting the gVerbose global. :)
+	
+	> JRP: now that we've written all the attack generators, 
+	i'm able to write FN generateCaptureMoves().. a necessary prerequisite
+	to getting FN quiessenceSearch() running. 
+
+	> JRP: added new peaCmd, 'captures' which returns a list of captures
+	to tools.cpp. it shows that your captureMoves is not yet working..! :-p
+
+july 30, 2012
+	> JRP: FN generateCaptureMoves() was not working, so i'm going to go 
+	literally by the logic of the original pChess version, and use robert
+	purves' method of using attacks2moves() to convert destination squares
+	into an array of move[] structs -- we will have to rewrite all of the 
+	attackMove generators to be consistent with this change (one day): 
+	wPawnAttacks(); bPawnAttacks(); knightAttacks(); bishopAttacks(); 
+	rookAttacks(); queenAttacks(); kingAttacks(). 
+
+	> JRP: attacks.cpp; refactored all the code to generate attackedSquares[],
+	and these are translated to movesRecords in attacks2moves(), and returned
+	in generateCaptureMoves() -- which was rewritten to match the working spec
+	included in pChess 2.0. using the 'captures' peaCmd should now list all
+	captures, but it does not —- function is still not working.. debuggrrr. 
+
+august 24, 2012 (pea.022)
+	> JRP: extracting a character out of an array of strings 
+	and convert to INT; loop and rebuild the raw FEN string 
+	into string bf in FN initFEN(): 
+
+	std::string myString = "45";
+	int value = atoi(myString.c_str());
+
+	peaCmd: :2bqkb2/1pppppp1/8/8/N5P1/p3QPR1/PPP1PKPN/R1BQ1B1b b - - 0 1
+	0: 2bqkb2/1pppppp1/8/8/N5P1/p3QPR1/PPP1PKPN/R1BQ1B1b
+	rawFEN: --bqkb--/-pppppp-/--------/--------/N-----P-/p---QPR-/PPP-PKPN/R-BQ-B-b
+
+august 28, 2012 (pea.022)
+	> JRP: FEN wouldnt display the new boardRecord. i had forgot to assign 
+	the boardRecord before returning.. duh! FEN assignments work fine now..!! 
+
+august 30, 2012
+	> JRP: FEN w or b to move, and castling also now set from FEN. 
+	> JRP: with the addition of enPassant decode, FEN finally works now. :-D
+
+	> JRP: finally using a version string in the display.cpp code: 
+	const char peaVersion[12] = "peaBrain 022";
+	printf("--| %s |-----------------", peaVersion);
+
+september 9, 2012 (long lake)
+	> JRP: added help (?) to peaCmds in tools.cpp
+	it displays current version and help (currently 21 peaCmds). 
+
+september 10, 2012
+	> JRP: in pea.022.cpp, added new FN int2string(). 
+	> JRP: same file, added new FN toFEN(), which accepts a boardRecord,
+	and returns std::string. function is not yet complete, only returns
+	the board.squares[]; and who2move; still have to do other FEN fields. 
+	FEN: nbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w  ==  woot! :-D
+	i can go to sleep now (2:30am). 8-]
+
+september 11, 2012
+	> JRP: upon waking, tested last night's code, and found a bug. :-(
+	the first char of the raw FEN wasnt returned due to off-by-one index. 
+	fixed. we now correctly emmanate FEN positions; still have to write
+	the code for the other FEN fields (i.e. castling, enpassant). 
+	> JRP: second bug: single occurances in the FEN string were missed; 
+	this was because of the way we were counting REPetitions starting 
+	now from 0 instead of 1; but this meant the '1' (index 0) never passed. 
+	> JRP: added KQkq castling options to FN toFEN(). 
+	> JRP: added enPassantSq options to FN toFEN(). 
+	> JRP: added help text for 'fen' peaCmd to tools.cpp. 
+
+september 13, 2012
+	> JRP: added some error checking to: initFEN() and displayBoard(). 
+	basically, it reports if the FEN setup string !=71 characters. 
+	this should trap basic errors in FEN input. will probably change 
+	this to return a BOOL instead of a VOID, and set it if FEN fails. 
+	also, displayBoard() now displays any spurious values if they appear. 
+
+september 16, 2012
+	> JRP: in peaChess.xcodeproj, updated the setSquare() and draggedOut()
+	methods to improve tracking accuracy - the underlying grid was offset
+	from the pieceView, and so drags to pieces on the edge of the board
+	didnt always track correctly; this is now fixed (first objectiveC fix). 
+
+january 15, 2013
+
+	> JRP: studying up on C++ class interfaces.. :-p
+	i await the marriage of peaBrain (my chess engine) with 
+	the merry lady meister - who shall receive the engine, 
+	as the lady receives her unicorn, and thereby stirs the game to life. 
+
+	yet first, much study in a changing landscape is required. 
+	things are different in iOS 6 with ARC, and even the one who knows 
+	has at least three opinions about how best to isolate C++ from 
+	objective C through class interfaces.. i have been studying the code 
+	of others who have done it -- and they are declaring namespaces, 
+	and redirecting std::stdio << *NSString!?!? aaargh.. 
+
+	it is difficult finding any reliable best practice on the matter. 
+	we cannot proceed unless we find the bridge syntax for C++ > ObjectiveC. 
+	gate seven hovers there, like a crag to be climbed.. at it!! 
+
+january 18, 2013
+	> JRP: well, we still dont know how to call our C++ functions properly yet,
+	but today i've just pulled the peaBrain into the project anyway, and its 
+	sitting there like a lump of code -- we have to graft the head onto the 
+	body of the beast.. and the class interfaces are like stitches that bridge
+	the spine in to the nerves. it compiles as valid C++ code, and it doesnt 
+	crash - but we cant call it.. :-(
+
+january 26, 2013
+	> JRP: still cant get the C++ and objectiveC headers to play nice.. :-(
+	so in order to feel like im making some progress, i made the icons rotate.
+	new method, rotateImage: takes a UIImageView and rotates specified degrees.
+	easily tied this in to the custom menuController, ID: 14 and 15, which flip
+	the two pieces on the board back and forth with a little sound effect. :-)
+
+january 27, 2013
+	> JRP: taking the rotation trick one step further.. 
+	rotate the whole backgroundImageview.. iOS is bloody cool. 
+
+	> JRP: we now have an objectiveC interface to a C++ class. 
+	it compiles, but it doesnt do anything; but at least it doesnt crash.. :-p
+
+january 28, 2013
+	> JRP: 6:15am.. EUREKA!! we have the bridge!! 
+	using ROB NAPIER's RNWrap.h ObjC wrapper for Wrap.cpp (2010), we were 
+	able to setup our own C++ class interface, instantiate it, and use 
+	a .cpp function to change the case of an NSString, by calling a function 
+	method in objectiveC using an opaque header interface -- essentially, 
+	it lies in the fact that a struct{} definition observes the same semantics
+	in both C++ and objectiveC (hope they dont ever change that!!), and this 
+	means that we can declare a C++ class interface within an opaque struct. 
+
+	// JRP: check out the C++ interface.. :-} 
+	RNWrap *wrap = [[RNWrap alloc] initWithString:@"foo how are you??"];
+	NSLog(@"wrap = %@", [wrap string]);
+	NSLog(@"wrapUpper1 = %@", [wrap upper]);
+
+	i had fallen asleep, my eyes weary with code, and awoken again right at it. 
+	the compiler was giving errors, and i was using it to probe my way forward. 
+
+	the compiler was true -- and my eureka! moment came when i realized that 
+	the objectiveC call couldn't find the member function, because it was still 
+	hidden in a private C++ class, and once i moved the semantic into the public
+	portion of the declaration -- it compiled.. i held my breath.. the moon had
+	been outside, through the snowy cold pines.. the snow had turned from crisp
+	to decidedly damp.. the baby app was still compiling.. with bated breath.. 
+	will it work!?!?? and there it was in the terminal output: 
+
+	> RESULT: 
+	| 2013-01-28 07:31:37.570 stepSeven[17713:907] wrap = foo how are you??
+	| 2013-01-28 07:31:37.574 stepSeven[17713:907] wrapUpper1 = FOO HOW ARE YOU??
+
+	success!!! 
+
+	we now have all three parts in hand: 
+	i) functioning negamax search engine written in C++
+	ii) objectiveC interface control executing on iPad
+	iii) C++ objectiveC interface semantic bridge
+
+	it is yet a long road ahead, but now i feel we know the essential
+	elements of what we will need to pull together the chess meister
+	as a functioning app, and begin to import our resources into a single
+	functioning XCode project.. YAYAYAAYAYAYA!! 
+
+	i added an NSLabel edit field for textInput, and then pass the output
+	to the C++ upper() function, and display it back in objectiveC as an 
+	NSString as proof of implementation. this is chessMeister 0.1.7. 
+
+february 7, 2013
+	> JRP: extending the roots of the CPP interface: brainCPP.cpp 
+	+ added: int RN::Wrap::getWords( string myStr, string* myWords ); 
+	and call it from FN parseInput() to extract word[2] to UPPERCASE -> works!!
+	semantic tokenizer activated -- WE HAVE OUR IN. ]:->
+
+	> JRP: algebraic interpretation of fromSquare and toSquare make this talk
+	more like a real chess game. added intToAlpha() and intToString() methods,
+	and call them with: toSquare.text = [self intToString:myNSString]
+
+
+> Chess Meister 0.1.9 (snow storm edition)
+
+march 2, 2013
+	> JRP: many experiments with extending the C++ portion by the 
+	use of #includes in the headers -- and still no dice. :-(
+
+	brainCPP.h contains the class interface for the class 'Wrap', which 
+	is located within namespace RN, and includes public and private members
+	which i am able to extend. 
+
+	i suppose i could just create a huuuuge 12,000 line file, and just 
+	extend brainCPP.cpp to contain the text of the whole engine, but 
+	that's nuts. i want to break it up into nice chunks, and #include them. 
+
+	so -- a single function: string myFunction( string cmd ); 
+
+	i can include it in the private definitions of the 'Wrap' class,
+	and just keep going like that -- but i'd like to stick that in 
+	brain2CPP.cpp, and call it from within the Wrap class (like i
+	do in: string RN::Wrap::parseInput( string str ) > parseOption03
+
+	in order to do this, i tried including brain2CPP.h and prefixing RN::
+	and i got it to compile, but it returns some thrown exception when i 
+	pass it a value - and i think its because i dont include the functions 
+	in a fully qualified way.. :-\ 
+
+	i think it is just basic header.h management across classes, 
+	but i cant seem to find a reliable (non-buggy) way to do it. :-\
+
+march 3, 2013
+	> JRP: still cant do something simple like extend the engine w/#include. 
+	although i have managed to include the pea declares with the board struct
+	definitions and move generator vector and mask definitions. 
+
+	after spending three days, and not being able to extend my headers (grrr)
+	i have to do it somehow, so im just going to port seven files and 12000
+	lines of code into one massive .cpp file -- it sucks, but right now i cant
+	do it any other way.. but at least we can move, and start our move 
+	generator -- which is absolutely imperative to doing ANYTHING. we'll figure
+	out how to bust this puppy into multiple files later -- but right now we 
+	just got to get it to MOVE at all.. here she goes... schlunk..
+
+	> JRP: added in several new functions to brainCPP.cpp and brainCPP.h
+	declarations for pawn move generator, pieceTree(), and some methods 
+	to pass initialize a boardRecord and return a querySquare. it is buggy
+	right now (off by 1), but it algorithmically returns move squares when
+	user presses and released on the same square. yea!!
+
+march 4, 2013
+	> JRP: fixed off-by-one x2 bug. i) in Wrap::move2algebraic(), it was 
+	returning 1based indicies, and boardRecord is addressed with 0indicies. 
+	ii) Wrap::col2int() returns 1indicies, so validMoves() should compute 
+	the querySquare using (col-1) like this: querySquare = (col-1)+(row-1)*8
+	it now computes and returns correct pawn moves. now we just have to write
+	the objectiveC to FEN function so we can feed the C++ side a board model. 
+
+	> JRP: we can return move results from a boardRecord, but at present 
+	we can only initialize to classic. we can pass and initialize a board,
+	but not yet set it arbitrarily from a FEN string. 
+
+march 9, 2013
+	> JRP: found out what was crashing Wrap::initFEN(). the atoi() function
+	was throwing an exception. screw that, so i just did a stupid brute force
+	quickie function: digit2Int() that returns a string digit as an INT. DONE.
+	this little block prevented us from being able to convert incoming FEN
+	strings from objectiveC into C++ board representations.. now that we are
+	able to pass position information via FEN strings, and we can generate 
+	a pawn move, we should be able to highlight valid pawn moves.. woot!! 
+
+	but first we have to generate FEN strings in objectiveC from the board.. 
+	but tame impala is playing in toronto tonight -- and we have 8 minutes 
+	to the boat..!! wrote the function in ten minutes.. it compiles..!! 
+	two errors; fixes one; and the compiler catches the last one.. 
+	it compiles and runs.. <yeah> off we go 2 tame impala!! :-D
+
+	> JRP: tame impala was really great!!! finished the last function, 
+	and it compiled just before the show.. now it is 2am, and we just 
+	added in the rest of the move functions for: bPawn; bishop, knight,
+	rook, and queen (wKing and bKing still to go) -- tested this, and
+	it returns highlights for move generation to objC from C++ -- woot!! 
+
+
+> Chess Meister 0.2.2 (tame impala edition)
+
+march 10, 2013
+	> JRP: added in the rest of FEN decode (colour2move; castling; enPassant)
+	to brainCPP > initFEN(). we dont yet send these from objC, but we are now
+	set to recieve them into the C++ boardModel. :-)
+
+	> JRP: changed validMoves() to return the fromSquare in the list of moves. 
+	also changed move2algebraic() to recieve an int moveSq instead of recieving
+	a moveRecord; updated corresponding declaration in brainCPP.h. 
+
+	> peaBrain Porting Log
+		+ parseMove()
+		+ getWords()
+		+ initClassic()
+		+ initFEN()
+		+ digit2Int()
+		+ col2int()
+		+ row2int()
+		+ validMoves()
+		+ move2algebraic()
+
+		+ sq2X()
+		+ sq2Y()
+		+ wPawnMoves()
+		+ bPawnMoves()
+		+ bishopMoves()
+		+ knightMoves()
+		+ rookMoves()
+		+ queenMoves()
+		- wKingMoves()
+		- bKingMoves()
+		+ pieceTree()
+
+	> JRP: added generators for wKingMoves() and bKingMoves(). these are 
+	not yet complete, as they require a function: isAttacked() which is not 
+	yet implemented.. i've commented out this part of the code, until i write
+	the isAttacked() function. we have king moves; but can castle thru check. 
+
+march 11, 2013
+	> JRP: changed the C++ namespace and class from: RN::Wrap > pea::Brain. 
+	tested and compiled. it better signifies the functionality of the class. 
+
+	> JRP: finally getting the peaBrain engine injected into the app. 
+	copied in the rest of the peaBrain.cpp C++ engine functions: 
+		+ generateRawMoves()
+		+ generateLegalMoves()
+		+ generateCaptureMoves()
+
+		+ makeMove()
+		+ sortMoves()
+		+ isAttacked()
+		+ isSideToMoveInCheck()
+		+ isLegalPosition()
+		+ quiescenceSearch() (not yet debugged)
+		+ negaSearch()
+		+ computerSearch()
+		+ perft()
+
+		+ staticEval()
+		+ attacks2moves()
+		+ attackGenerators
+			+[wPawn; bPawn; bishop; knight; rook; queen; wKing; bKing]
+
+		amazingly, this 2300 line monstrosity compiled without errors!! 
+		doesnt do anything, but it compiles!! :-)
+
+	> JRP: added in the main C++ calling function: makeMove()
+		simply, it will be called from the parser, and return a string
+		based on a board initialized with a FEN -- and that's it. 
+		staticEval is already in place, and this is the function that 
+		puts in the call to computerSearch(), which generates the root 
+		moves; then computerSearch calls the negaSearch() proper to do 
+		the recursive search for bestMove. either it will blow up with
+		nightmare memory management situation, or it'll beep.. comon baby..
+
+	> JRP: added makeMove: method which sends a 'go' command to the parser, 
+	which calls computerSearch, does a negamax search (depth:2), and returns
+	a move in algebraic format — and uses blipFromTo: to render the result.
+	its makin moves on there!! chess meister has a new baby brain!! 
+	ITS ALIVE!!! :-}
+
+march 26, 2013
+	> JRP: i had missed some cruft in pokeBrain: method, after 
+	the makeMoveFromSQ: method call, i was still explicitly calling
+	renderSQ:blipToSQ, and so when peaBrain was making its move, it woud 
+	first render the toSQ giving the momentarily unsetling illusion that 
+	it was capturing a piece which was itself, now it leaves things alone, 
+	and lets the methods take care of what they should. 
+	the pea is a lil less spooky now, debuggerz get out!! 
+
+	the sequence is still -- blah blah blah, i come to suck your blood.. 
+	you still get the spook pounce, only now you dont anihilate your own
+	doppleganger -- when the engine returns its move, from out of nowhere,
+	you hear the purr sound, and a FROM and TO square light up on the board..
+	once they are lit up, the fireCannon is invoked, and the floaterPiece 
+	assumes the identity of the fromSQ, and flies across the screen with 
+	a soft purr to pounce on the toSQ over which it subsumes its host, 
+	and sets and reveals the new pieceType in the toSQ, and then hides 
+	the floaterPiece, leaving the state of the board thus transformed. 
+
+	it happens in a fraction of a second, but little dance must all be 
+	carefully choreographed.. for that dance which is danced millions 
+	of times should be got right at the outset for a satisfying interface. 
+	now the subtle bug is fixed, time to drink more coffee, and then on to 
+	write a function to encode the castling rights, and set them accurately
+	in makeMove: 
+
+	> JRP: EVALUATION FUNCTION. in Brain::staticEval(), added A 
+	bishopPairScore evaluation, as per the prototype Eval in pChess 2.0.7; 
+	and in declares.h added const for _wtMobility, _castleBonus,
+	KingGravity/Shelter, BishopPair, CastleBonus. 
+
+	> GREE: attackMoves doesnt have a blackPawn call (!!)
+
+	> JRP: found bug in pChess 2.0.7; kingSafety eval: (who2hold==1) is WRONG
+
+	> JRP: adding kingSafety evaluation.. power @15% logingout!!!
+
+	> JRP: added king safety evaluator. 
+
+	> JRP: added CASTLE BONUS evaluator (+10 if castled; -5 if not). 
+
+march 27, 2013
+	> GREE: greg steiner called in with a righteous bugfix in the troublesome
+	quiescenceSearch().. in the FOR() exrpression, i was incrementing the 
+	wrong operator.. and this sent it into an infinite loop... gregory has
+	saved me many days of work by tracking this code.. in code that is hard
+	to grok unless you have some real familiarity with the language and the
+	codebase -- thank you my friend, before 9:15, the day's work has been done.
+
+	WRONG: for (moveIndex = 0; moveIndex < numMoves; numMoves++ ) {
+	RIGHT: for (moveIndex = 0; moveIndex < numMoves; moveIndex++ ) {
+
+	duh meister penner.. :-p
+
+	still gives a Segmentation fault, but it is progress..
+
+	> JRP: fixed a bug; check sounds were not playing when UILabel 
+	indicated that CHECK had occured; NSSound ID=10 does not play 
+	when called? now using snd7. 
+
+	> JRP: added new setCheckSquare: method which locates and highlights 
+	the current who2move kingSQ with a red glow when called. it is called
+	from the checkTest: method. when you're in check -- chess meister now
+	does something when checkmates happens; a sound, and the king turns RED! 
+
+	> JRP: new glowRed.png images which match the glowBlue; but adjusted hue. 
+	also, adjusted the label locations to better align with the new board. 
+
+	> JRP: reflected checkmate and engine changes from iPad to iPhone. 
+
+april 1, 2013
+	> GREE: progress on quiescence search!! the board record could not 
+	be handled by reference; it crashedd the instances.. (maybe sez john). 
+	(NOPE. this was not it)
+
+	JRP: if quiescence search is enabled, and we return patScore before
+	hitting the recursive loop, it works fine. if we let it run sortMoves,
+	then it crashes. looking at sortMoves, it sorts based on moves.capturePiece.
+	this leads me to think that somewhere in captureMoves, we arent correctly
+	setting captureMoves, and this is corrupting the search during the sort. 
+
+april 2, 2013
+	> JRP: reset menuLabel2.text = @"" in the triggerTouch: method if there 
+	was no match; along with clearing the overlay. 
+
+april 3, 2013
+	> GREE: cracked the quiescenceSearch bug!! it was calling sortMoves(),
+	and looking at the second expression of the second for loop: 
+
+	WRONG: for (i=j-1; i<1; i--) {
+	RIGHT: for (i=j-1; i>-1; i--) {
+	
+	it was simply that i had incorrectly specified the terminating condition.
+	once this was fixed, everything worked out okay. :-)  it also has the
+	benefit of speeding up search (so we can go from depth 3 to 4), and 
+	fixing the queen trade bug. 
+
+	testing: oh no, it makes some really bad moves now. :-( 
+	it just throws forward its first pawn move, and makes bad trades. 
+	it is broken.. :-(
+
+april 5, 2013
+	> GREE: found that it was returning positional eval scores that 
+	were double what they should be. in the original pChess, i divided
+	the positional scores by 2 to get the right scale; here i hadnt yet
+	done it, and it caused some weird moves / evaluations.  thx gree!!
+	mobilityScore = (wM-bM) / 2;
+
+april 14, 2013
+	> GREE: doing epic one day port of the pChess 2.0r7 Evaluation. 
+	many bugs, and brackets backwards, but we're finally getting a real eval,
+	and not just the place holder eval we've been using this far. buggy, but
+	worth it. 
+
+april 15, 2013
+	> JRP: it took longer to debug what gree had ported, but we got it tested
+	and running. we now have full pChess 2.0r7 eval code ported to C++, and 
+	installed in the Chess Meister. woot!!
+
+april 17, 2013
+	> JRP: i think it was crashing during a bloom in: 
+		nega > qui > staticEVAL >> genRaw > pieceTree > wKing > isAttacked()
+		and corrupted the board state. so i added a separate testBoard
+		to handle this: struct boardRecord thruCheckBoard;
+
+april 20, 2013
+	> JRP: wrote the fischer initialization method. 
+	used the new arc4random_uniform() method of generating random numbers,
+	as it avoids the 'modulo bias' of using: rand() % range + offset. 
+	arc4random is based on the cryptologic methods built in to iOS, 
+	so its about as statistically random as pseudo-random can get. 
+
+	| Anyone who considers arithmetical methods of producing 
+	| random digits is, of course, in a state of sin.  (John Von Neumann) 
+
+	we still dont store the fischer.rook1 and .rook2 squares in the
+	board record, nor can fischer castle.. still to come. 
+
+april 21, 2013
+	> JRP: wrote the FEN decryption on the objectiveC side. 
+	this means that we can finally paste a FEN. it also sets us up to 
+	be able to receive the previous moves in the gameHistory we've been 
+	generating (so far, this crashes, because we dont check the input). 
+
+april 22, 2013
+	> JRP: added enPassant support to generateFEN: method, and added the
+	enPassant information during makeMove -- so we should be sending 
+	enPassant moves to the engine, and they show up as valid moves. 
+
+	however - if you make an enPassant move, it doesnt capture yet. 
+	we're almost there.. all we have to do now is write the enPassant 
+	capture into the objC makeMove method. 
+
+may 11, 2013
+	> JRP: things have been crazy busy with the yield branding IT move, 
+	and also with my own personal move -- to sylvia sweeney's editing pod. 
+	then home to st. catharines for mother's day; unkle frank came with his 
+	iphone and ipad -- version 0.4.0 is an alpha version, and he's going 
+	to do some user testing. had to fix up the iphone version and take out 
+	the buggy button code -- no undo/redo for phone until that's fixed. 
+	have a usable beta for the iphone however. 
+
+	version 0.4.0 runs at depth 3 with quiescenceSearch; 
+	pChess 2.0r7 for OSX runs at depth 7. this lil daughter o peaBrain
+	is fiesty - but should be quite a bit easier to beat at this point. 
+	my next plan is to add a ECO opening book, and increase depth to 5 
+	in the endgame. this should make it stronger in the beginning and 
+	endgame given the more limited processing power of phone CPUs. 
+	one day too, i will need to get hash tables functioning for greater
+	speed and depth on searches. unkle frank is a good chess player, 
+	his game will rate it. :-D 
+
+	> BETA TESTERS (chessMeister 0.4.0): 
+	- mama iPad 1st gen; iOS5)
+	- zorra (iPad 2nd gen; iOS 6.1)
+	- charles goodall (iPad mini; iOS 6.1)
+	- frank penner iPhone (5th gen; iOS 6.1)
+	- frank penner iPad (mini; iOS 6.1)
+
+may 18, 2013
+	> JRP: in preparation for opening book functionality, we need to teach
+	the lil miss peaBrain her standard chess notation -- but we have to
+	write the functions first. these are still in futurebasic, and involve 
+	arcane and tricky string handling semantics, which require implicit 
+	board knowledge, and so book requires standard notation, and SAN requires
+	a disambiguation call to the chess engine in order to determine if 
+	more than two pieces can target the same square.. pita. 
+
+	> JRP: peaBrain will now growl and return your piece to its square 
+	when an illegal move is made. yet, if a user touches ANY piece, it 
+	will show legal moves for that piece -- regardless of colour2move. 
+	e.g. touch a black knight during white's turn, and it shows moves 
+	for the black knight when it should return a message saying something
+	like: 'white's turn'. we need a boolean comparison of pieceColour 
+	to colour2move -- and thus, a new function: 
+
+	getPieceColour:(NSString*) pieceType
+
+	if the pieceTouched == colour2move, it'll pass. 
+	if not, it will return colour2move and beep. as a nice side-effect, 
+	if user touches a non-lit square, it will clear the message area 
+	(instead of falsely retaining 'tap destination' in msg area). 
+
+may 20, 2013
+	> JRP: wrote a new function in Brain.CPP > int Brain::isTarget() 
+	which is a move generator for moves that target a given square. 
+	this is prerequisite to disambiguating SAN moves. 
+
+	> JRP: wrote two new functions in Brain.CPP > int Brain::algeb2fromSQ()
+	and int Brain::algeb2toSQ(). these both takes in a string AlgebMove, 
+	and returns an int fromSQ or toSQ. which is prerequisite to when we write
+	algeb2Std() -- which requires a boardRecord in order to determine 
+	the context of disambiguating moves. 
+
+	> JRP: began a new function in Brain.CPP > string Brain::algeb2Std()
+	which takes in a board record and a string AlgebMove, and returns a
+	string in STD notation (e.g. Nxf3). only about half way done..zzz
+
+may 22, 2013
+	> JRP: wrote new function: move2algebraic( moveRecord theMove ), 
+	which differs from moveSQ2algebraic( int moveSQ ) —— which only
+	processes a single square. this is part of the requirements for 
+	algeb2Std -- feeding back algebraic strings from moveRecords. 
+
+	> JRP: new method, SANfromAlgebraic:(NSString *)algebraicMove
+	encodes the current board as a FEN, and sends it down the rabbit hole
+	to the engine, and retrieves a SAN string (currently returning a 
+	dummy value for testing). i've called this method from all the places 
+	the UI makes a call to makeMove, and displays the result in inputField
+	(yes, im using inputField for output :-p)
+
+	the CPP function algeb2Std() isnt finished yet (doesnt indicate check
+	or promotion) -- but it does indicate captures, and it manages to 
+	disambiguate knight moves.. woot!! but it is 3:30am, and i have to work 
+	in the morning (catching boat to head in to Yield at 7:15am). 
+
+may 23, 2013
+	> JRP: too tired causes bug: algeb2Std() would disambiguate moves, 
+	and indicate captures; but it would return rank[1-8] instead of 
+	file[A-H] because the .substr() indicies start at 0 and not 1 (FIXED). 
+
+	> JRP: added: checkTest, promotion, and castling tests to algeb2Std(). 
+	this completes SAN WRITE implementation. now we need to write SAN READ. :-D
+
+	> JRP: testing showed that although SAN was properly disambiguating 
+	KNIGHT moves, it wasnt disambiguating ROOK moves.. wtf!?!? so i traced
+	it back to code in isTarget() -- i must have fallen asleep while i was
+	writing the function, because rook and queen moves were still calling 
+	knightMove prototypes.. bah!! dumb programmer; makes his own errors, 
+	and then finds them. :-\  at least we have disambiguated SAN output now. :)
+
+may 25, 2013
+	> JRP: string Std2Algebraic( string StdMoveIn, boardRecord &inBoard )
+	is a new function that converts SAN moves (like those found in the 
+	opening book and PGN game files) are converted back to algebraic. 
+	currently testing.. (good band playing @WIA tonight.. fly like an eagle)
+	[after function worked; went dancing.. :-)]
+
+may 26, 2013
+	> JRP: a bug in Std2Algebraic() caused it to return no output when 
+	disambiguating moves -- i had used a 0 ordinal instead of 1 in comparing
+	StdMove[] -- this had caused it to condinition off the wrong character. 
+	(FIXED)
+
+	> JRP: in STD move disambiguation, king moves would return 
+	numMoves==0 !?!? it was because in the function isTarget() 
+	we tested pieceColour == -6 instead of -1.. :-p  (FIXED)
+	
+	> JRP: added new method, loadBook, which just reads a text file, 
+	and logs every line in the text file, as separated by /n characters. 
+	
+	> JRP: new method ivars: NSMutableArray *bookTitle, *bookChain;
+	this will hold the opening book (10,000 lines from the ECO encyclopedia).
+	
+may 27, 2013
+	> JRP: new method, algebraicFromSAN:(NSString*)SANmove
+	encodes the current board as a *FENpos, and sends it down the rabbit
+	hole to the engine, in order to obtain an algebraic interpretation 
+	of the move. necessary for reading book moves and PGN streams. 
+	
+	> JRP: working on the loadBook method. it is now able to search and 
+	find the { book name } marker, and split the incoming file into an 
+	NSArray of *NSStrings which have each of their words scrubbed of 
+	move numbers -- this prepares them for comparison to the gameChain. 
+	process is really slow though -- parsing 1Mb file in 9secs @startup. 
+	received a few memory warnings, but then it went through.. careful. 
+	gameplay didnt crash, and engine didnt hit any memory limits. 
+
+	JRP: fixed a bug: SAN and gameCHAIN must be BEFORE makeMOVE, while 
+	HISTORY must be AFTER makeMOVE. this is because history records game 
+	state after the move; whereas gameCHAIN requires SAN to know 
+	disambiguating board information from BEFORE the move.. things go 
+	really screwy if this order is altered. 
+
+	> JRP: updated pokeBrain to make a call to a dummy bookMove method. 
+	right now it just returns @"--". the actual compare and pick still 
+	needs to be written. 
+
+june 9, 2013
+	> JRP: FIND: BUG: castle out of check bug; game with unkle frank. 
+	it doesnt register a checkmate (when in fact there IS one), because 
+	the checkTest doesnt set gInCheck before generating castling moves. 
+
+	it thinks that castling is a legal move out of the check mate, and 
+	thus only declares CHECK, and not MATE when Rxd1. FEN to reproduce: 
+	2kr1bnr/1pp2ppp/p7/8/b1Q5/4P3/PP2NPPP/R1BNK2R b - -
+
+june 13, 2013
+	> JRP: names for the ECO openings in peaBook.txt were excessively long. 
+	spent seven hours editing 2502 lines, and removing names consisting of
+	different strings of moves. since the names are now about 60% shorter 
+	on average -- this should also improve book load speed. 2500 lines of
+	names accounts for about 40k of extraneous title text.. still have 7000
+	lines to go... :-p
+
+june 14, 2013
+	> JRP: opening book edits
+	- 6709 openings edited; 3000 to go...
+
+june 15, 2013
+	> JRP: 10,400 opening edits (DONE!!)
+	- all those opening book names -- FIXED!! hours and hours and hours. 
+	- this has the additional advantage of feeding back to pChess 2.0, 
+		since they use the same opening book file, i'm updating pChess 
+		to version 2.0rc8 (with the edited opening book). 
+	- old opening book size: 1,082,557 bytes
+	- new opening book size: 921,687
+
+	> JRP: added an 'Activity Indicator View' which displays while the 
+	engine is computing the move -- keeps user from guessing if the app 
+	is alive (it is!).. :-} 
+
+june 19, 2013
+	> JRP: asynchronous book loads!! woot!! iOS is freakin amazing!! 
+	so simple to do multi-threading, i can't believe how easy it is. 
+	loading the 10,000 move opening book took ten seconds -- killing user 
+	responsiveness at startup. but using: dispatch_async(queue, ^{..});
+	it runs everything inside on a separate concurrent thread.. WOW! 
+	thanks apple for GCD (iOS4 and OSX10.6) -- and making it easy!! :-D 
+	
+	> JRP: because the book now loads asynchronously, it should no longer 
+	make linear assumptions that if the book is simply 'enabled', that it is
+	then also 'loaded' -- if the user was really fast, and made a move before
+	the book was finished loading, it would crash, because it tried to pick 
+	a move from a book which wasnt yet fully loaded (user will always jump 
+	the gun principle) -- so now, in the pokeBrain method, we not only test
+	if the book is ENABLED, but also how many moves are loaded, and if 
+	greater than 9000 (out of a 10,000 line opening book) are loaded, only
+	then does it go ahead and pick from the book. if the book isnt fully 
+	loaded yet -- it'll go generate a move with the peaBrain until such
+	time that the book IS loaded (with 8-12 second load times -- probably
+	the second move) -- since the move is recorded into the gameChain 
+	whether the book is on or not -- when the book does kick in, it will 
+	pick right up, and grab a move out of the book to match it once it 
+	becomes available -- schweeet msr penner. 
+
+	> JRP: this special sauce was just too good to be true, and i immediately
+	ported it over to the iPhone version. there are still no book icons, and 
+	no captured pieces display on the iphone version.. there are more important
+	things to do right now -- like writing the load and save game functions. 
+	yet -- asynchronous opening book loading now works on the iphone. :-}
+
+
+june 22, 2013
+
+	> JRP: updated logBoard method to use a more compact ASCII representation. 
+	uses only 11 lines (instead of 19) - significant when repeated often. 
+		2013-06-22 Chess Meister[12199:907] +-| Chess Meister |--
+		2013-06-22 Chess Meister[12199:907] | r n b q k b n r | 8
+		2013-06-22 Chess Meister[12199:907] | p p p - p p p p | 7
+		2013-06-22 Chess Meister[12199:907] | - - - - - - - - | 6
+		2013-06-22 Chess Meister[12199:907] | - - - p - - - - | 5
+		2013-06-22 Chess Meister[12199:907] | - - - P - - - - | 4
+		2013-06-22 Chess Meister[12199:907] | - - - - - - - - | 3
+		2013-06-22 Chess Meister[12199:907] | P P P - P P P P | 2
+		2013-06-22 Chess Meister[12199:907] | R N B Q K B N R | 1
+		2013-06-22 Chess Meister[12199:907] +--+-+-+-+-+-+-+--+--
+		2013-06-22 Chess Meister[12199:907]   a b c d e f g h 
+
+july 3, 2013
+	> RIP: douglas engelbart. steve was necessary for ordering the domain 
+	based on human considerations; but its worth giving cred to the 
+	shoulders of the giants upon which he stood — and to whom he gave 
+	respects in digging up their guiding research, and bringing it to 
+	the masses by aspiring beyond the medicrocrity which was CP/M and DOS
+	everywhere else. the DOSheads rididiculed the mac for being wasteful 
+	of system resources (using memory for an icon instead of text was 
+	considered squanderous, for the same reason they used two digits 
+	for a date — the man who thought '640k' outa be enough for anybody). 
+	there was no vision of a GUI, of music files being digitized or 
+	networks ubiquitously hooking things up from microsoft — it is 
+	Doug Engelbart who set the tone for our whole internet way 
+	of being.. yeeeeehah..!! RIP - you are among the god-fathers, 
+	along with claude shannon. 
+
+july 6, 2013
+	> JRP: fixed BUG; loading the BOOK with NSASCIIStringEncoding resulted 
+	in weird accented characters; now we use:NSUTF8StringEncoding, and this
+	seems to work nicely. Grünfeld and Sämisch have got respect now. :-)
+	
+	For future reference, accents in a so called 'simple' text file: 
+
+		> original peaBook.txt
+		- Character Encoding: Mac OS Roman
+		- Line Endings: UNIX (LF)
+		- NSString encoding: NSASCIIStringEncoding
+
+		> working peaBook.txt
+		- Character Encoding: Unicode (UTF8)
+		- Line Endings: UNIX (LF)
+		- NSString encoding: NSUTF8StringEncoding
+
+july 7, 2013
+	> JRP: brainCPP.cpp; added new parseOption 'score', which returns
+	the result of a quiescent evaluation of the board. it is the number 
+	that should be stuck in to the meter. :-}  back in the old days, we
+	used to return a staticEval; but a quiescent eval is more reflective
+	of the dynamic situation on the board -- and thus more useful to user. 
+
+january 9, 2013
+	> GREE: creating a CPP class wrapper to test the engine from 
+	the commandline. commits of three new files to baseline: 
+	- test0.3.cpp; test0.3.h; hash.incl
+	- hash.incl is the first pass at a port of the (barely hobbling)
+		hash implementation in futureBasic pChess 2.0rc7. 
+
+january 10, 2013
+	> GREE: updated CPP class wrapper: 
+	- test0.4.cpp; test0.4.h; hash.incl
+	- one cannot initialize a member within a class (or struct) declaration. 
+		suggesting a constructor; see test0.4.cpp for my suggested format. 
+
+january 11, 2014
+	> JRP: updated logBoard method to include w/b indicator in BR corner. 
+	[theBoard objectAtIndex:64]
+
+february 5, 2014
+	> JRP: cleaning up some of the NSLog and cout << CPP engine entries. 
+	this results in a cleaner log during engine searches. :-D
+
+october 18, 2014
+	> JRP: XCode > Product > Scheme > Edit Scheme
+		- Archive > Build Configuration: RELEASE (YES)
+		+ Chess Meister (Oct.18.2014, @16:56) VALIDATION SUCCESSFUL!! 
+	
+	> JRP: XCode > Organizer > Archives > Submit..
+		- Uploading... (SUCCESSFUL!!)
+	
+	> JRP: iTunes Connect > MyApps > Chess Meister > Submit for Review
+		- Waiting for Review.. (!!)
+
+	> JRP: we have set this baby forth into the world.. @8-O
+
+	> Chess Meister 1.0 SUBMITTED
+
+november 21, 2014
+	> JRP: removed ' from opening book title: 
+	{ C27 Vienna: Adams Gambit } 1.e4 e5 2.Nc3 Nf6.. }
+
+
+December 19, 2021
+
+cleaned up this log file and prepared to upload peaBrain 3.4 to GitHub
+
+
